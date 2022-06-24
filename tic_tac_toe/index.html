@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>js play</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+
+    <style>
+
+        html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a,
+        abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike,
+        strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend,
+        table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed,  figure,
+        figcaption, footer, header, hgroup,  menu, nav, output, ruby, section, summary, time, mark, audio,
+        video {
+            margin: 0;
+            padding: 0;
+            border: 0;
+        }
+        html{
+            background-color: #dbfff0;
+            font: 20px Lato, serif;
+        }
+
+        #container{
+            margin: auto;
+            padding-top: 25px;
+            width: 85vw;
+            height: 100vh;
+            display: grid;
+            grid-template-rows: 302px 1fr;
+            grid-gap: 10px;
+        }
+        #game-window{
+            width: fit-content;
+        }
+        #gameBoard{
+            width: 306px;
+            height: 302px;
+            margin: auto;
+            background-color: #ffffff;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            grid-gap: 1px;
+            /* margin: 1px; */
+        }
+        #reset{
+            width: 100%;
+            border: none;
+            height: 50px;
+            font: 20px Lato, serif;
+            background-color: #01e5a0;
+            color: #ffffff;
+
+        }
+        #reset:hover{
+            background-color: #fff;
+        }
+        .tile{
+            background-color: #a8e8d4;
+            box-sizing: border-box;
+        }
+        .tile:hover{
+            border: #888888 2px solid;
+        }
+        .playerOne{
+            background-color: rgb(240, 187, 187);
+            border: #e74c4c 2px solid;
+
+        }
+        .playerTwo{
+            background-color: rgb(168, 188, 245);
+            border: #3842d8 2px solid;
+
+        }
+        #winner-box{
+            width: 302px;
+            height: 302px;
+            box-sizing: border-box;
+            position: absolute;
+            pointer-events: none;
+            font-size: xx-large;
+            padding-top: 125px;
+            padding-left: 25px;
+        }
+    </style>
+
+
+    </head>
+    <body>
+
+    <div id="container">
+        <div id="game-window">
+            <div id="winner-box">
+                <span style="margin: auto" id="winner-text"></span>
+            </div>
+            <div id="gameBoard"></div>
+
+            <div class="whosTurn">
+                <p style="margin-top: 10px; margin-bottom: 10px;">Current Player: <span id="current-player"></span></p>
+                <button id="reset">Reset</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.onload = (event) => {
+
+            //The maximum is exclusive and the minimum is inclusive
+            function getRandomInt(min, max) {
+                min = Math.ceil(min);
+                max = Math.floor(max);
+                return Math.floor(Math.random() * (max - min) + min);
+            }
+
+            let gameBoard = document.getElementById('gameBoard');
+
+            let currentPlayer = getRandomInt(1,3);
+            let currentPlayerEle = document.getElementById('current-player');
+
+            // 0 = NO ONE, 1 = PLAYER 1, 2 = PLAYER 2
+            let currentGameGrid = [];
+
+            let winner;
+
+            function updatePlayer(current) {
+                if(current === 1){
+                    currentPlayer = 2
+                } else{
+                    currentPlayer = 1
+                }
+                currentPlayerEle.innerText = currentPlayer;
+            }
+
+            //sets board and adds event listiner
+            function createBoard() {
+
+                currentGameGrid = [
+                    0,0,0,
+                    0,0,0,
+                    0,0,0
+                ];
+
+                currentPlayerEle.innerText = currentPlayer;
+
+
+                for (let i = 0; i < 9; i++) {
+                    let newDiv = document.createElement('div');
+                    newDiv.id = `tile-${i}`
+                    newDiv.classList.add('tile')
+                    newDiv.addEventListener('click', (e)=>{
+                        //prevetns event if theres a winner
+                        if(winner > 0){
+                            return
+                        }
+                        //checks for already clicked tile and prevents it
+                        if(e.target.classList.contains('playerOne')||e.target.classList.contains('playerTwo')){
+                            return
+                        }
+                        //updates class list for div and sets player owner
+                        if(currentPlayer === 1){
+                            e.target.classList.add('playerOne')
+                            currentGameGrid[e.target.id.charAt(5)] = 1
+                        } else {
+                            e.target.classList.add('playerTwo')
+                            currentGameGrid[e.target.id.charAt(5)] = 2
+                        }
+
+                        //switches for next turn and checks if someone won
+                        updatePlayer(currentPlayer)
+                        whoWon()
+                    })
+                    //adds div to board
+                    gameBoard.appendChild(newDiv)
+                }
+            }
+
+            //handles rest of game
+            document.getElementById('reset').addEventListener('click', (e)=>{
+                gameBoard.innerHTML = '';
+                createBoard();
+                currentPlayer = getRandomInt(1,3);
+                currentPlayerEle.innerText = currentPlayer;
+                winner = 0;
+                document.getElementById('winner-text').innerText = ''
+            })
+
+            function whoWon() {
+                let winConditions =[
+                    [0,1,2],
+                    [3,4,5],
+                    [6,7,8],
+                    [0,4,8],
+                    [2,4,6],
+                    [0,3,6],
+                    [1,4,7],
+                    [2,5,8]
+                ]
+
+                //for each nested array check over conditions and set winner text...
+                // change later to be cleaner.. could be better
+                winConditions.forEach(conditions => {
+                    if(currentGameGrid[conditions[0]]=== 0){
+                        //do nothing
+                    } else if(currentGameGrid[conditions[0]] === currentGameGrid[conditions[1]] && currentGameGrid[conditions[0]] === currentGameGrid[conditions[2]]){
+                        winner = currentGameGrid[conditions[0]];
+                        document.getElementById('winner-text').innerText = `PLAYER ${winner} WINS!`
+                    }
+
+                });
+
+            }
+
+            //creates game board
+            createBoard()
+        };
+    </script>
+
+    </body>
+
+</html>
