@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>storied.io</title>
+
+    <style>
+
+        /* CSS / HTML Reset */
+
+        html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a,
+        abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike,
+        strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend,
+        table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed,  figure,
+        figcaption, footer, header, hgroup,  menu, nav, output, ruby, section, summary, time, mark, audio,
+        video {
+            margin: 0;
+            padding: 0;
+            border: 0;
+            font: inherit;
+            vertical-align: baseline;
+            image-rendering: pixelated;
+        }
+        :root {
+            --pixel-size: 6;
+            --grid-cell: calc( var(--pixel-size) * 16);
+        }
+        body{
+            background-color: #4a4a4a;
+        }
+        
+        #ground{
+            width: 100vw;
+            height: 100vw;
+            background-color: #f2f2f2;
+            margin: 50px;
+        }
+
+        #player{
+            position: absolute;
+            height: calc(32px * var(--pixel-size));
+            width: calc(32px * var(--pixel-size));
+            overflow: hidden;
+            background-color: #ffffff;
+        }
+
+        .playerImage{
+            animation: moveSpritesheet 1s steps(6) infinite;
+            width: calc(192px * var(--pixel-size));;
+        }
+
+        @keyframes moveSpritesheet {
+            from {
+                transform: translate3d(0px,0,0)
+            }
+            to {
+                transform: translate3d(-100%,0,0)
+            }
+        }
+
+    </style>
+
+</head>
+<body>
+
+<!--    <canvas id="main_canvas" width="1000" height="1000"></canvas>-->
+
+<div id="ground">
+    <div id="player">
+        <img src="PLAYER_WALK.png" alt="" class="playerImage">
+    </div>
+</div>
+
+
+    <script>
+        let speed = 4;
+
+        let player = {
+            x: 0,
+            y: 0,
+            imgSRC: 'Sprite-0001.png',
+            element: document.getElementById('player'),
+            facing:'',
+            speed: 5
+        }
+
+        let keys = {
+            up:false,
+            down:false,
+            left:false,
+            right:false,
+            shift:false
+        }
+
+
+        document.addEventListener('keydown', (e)=>{
+
+            switch (e.code){
+                case 'KeyW':
+                    keys.up = true
+                    break;
+                case 'KeyS':
+                    keys.down = true
+                    break;
+
+                case 'KeyA':
+                    keys.left = true
+                    break;
+
+                case 'KeyD':
+                    keys.right = true;
+                    break;
+                case 'ShiftLeft':
+                    keys.shift = true;
+                    break;
+            }
+
+        })
+        document.addEventListener('keyup', (e)=>{
+            switch (e.code){
+                case 'KeyW':
+                    keys.up = false
+                    break;
+                case 'KeyS':
+                    keys.down = false
+                    break;
+
+                case 'KeyA':
+                    keys.left = false
+                    break;
+
+                case 'KeyD':
+                    keys.right = false;
+                    break;
+
+                case 'ShiftLeft':
+                    keys.shift = false;
+                    break;
+            }
+        })
+
+
+
+        function update(progress) {
+            // Update the state of the world for the elapsed time since last render
+
+            playerMove()
+            // console.log(progress);
+
+        }
+
+        function playerMove() {
+
+            let increment = player.speed;
+
+            if (keys.shift){
+                increment+=player.speed*1.2;
+            }
+
+            if(edgeCheck()){
+                //do nothing?
+                console.log("nothin?");
+            } else {
+                if (keys.up){
+                    player.y-=increment;
+                }
+                if (keys.down){
+                    player.y+=increment;
+                }
+                if (keys.left){
+                    player.x-=increment;
+                }
+                if (keys.right){
+                    player.x+=increment;
+                }
+
+                player.element.style.top = player.y+'px'
+                player.element.style.left = player.x+'px'
+            }
+        }
+
+        function edgeCheck() {
+            //
+            // console.log(player.y);
+            //
+            // return player.element.offsetTop <= 16;
+
+        }
+
+        function draw() {
+            // Draw the state of the world
+        }
+
+        function loop(timestamp) {
+            let progress = timestamp - lastRender
+
+            update(progress)
+            draw()
+
+            lastRender = timestamp
+            window.requestAnimationFrame(loop)
+        }
+        let lastRender = 0
+        window.requestAnimationFrame(loop)
+        
+
+    </script>
+</body>
+</html>
