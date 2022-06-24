@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>sandbox3</title>
+        <style>
+            body{
+                margin: 1px;
+                background-color: #ffffff;
+
+            }
+            .wrapper{
+                display: grid;
+                grid-template-columns: repeat(9, 1fr);
+                grid-gap: 1px;
+            }
+            /*svg{*/
+                /*text-space: 0;*/
+                /*width: 21px;*/
+                /*height: 21px;*/
+            /*}*/
+            .defaultTileStyle{
+                width: 18px;
+                height: 18px;
+                background-color: #72d75f;
+            }
+
+            .defaultTileStyle:hover{
+                background-color: #96ff63;
+            }
+
+            .quadStyle{
+                /*width: 461px;*/
+                /*height: 461px;*/
+                width: 341px;
+                height: 341px;
+                display: grid;
+                grid-template-columns: 1fr;
+                grid-template-rows: repeat(18, 1fr);
+                grid-gap: 1px;
+            }
+            .rowStyle{
+                /*background-color: #cacaca;*/
+                height: 18px;
+                display: grid;
+                grid-template-columns: repeat(18, 1fr);
+                grid-gap: 1px;
+            }
+        </style>
+    </head>
+    <body>
+
+
+        <div id="mapContainer" class="wrapper"></div>
+
+    <script>
+        // const QUADS = 81;
+        // const ROW = 21;
+        // const TILE_PRE_ROW = 21;
+
+        const QUADS = 81;
+        const ROW = 18;
+        const TILE_PRE_ROW = 18;
+
+        //using svg ... slow as fuck
+        // function genMap() {
+        //
+        //     for (let quadNumber = 1 ; quadNumber<=QUADS ; quadNumber++){
+        //         let aNewDiv = document.createElement('div');
+        //         aNewDiv.setAttribute('id', quadNumber.toString());
+        //         aNewDiv.classList.add('quadStyle');
+        //
+        //         for (let rowNumber = 1; rowNumber <= ROW; rowNumber++) {
+        //             let aNewRow = document.createElement('div');
+        //             aNewRow.setAttribute('id', rowNumber.toString());
+        //             aNewRow.classList.add('rowStyle');
+        //
+        //             for (let tileNumber = 1; tileNumber <= TILE_PRE_ROW; tileNumber++) {
+        //                 let aNewSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        //                 aNewSvg.setAttribute('id', quadNumber.toString()+'-'+rowNumber.toString()+'-'+tileNumber.toString());
+        //
+        //
+        //                 let aNewTile = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        //                 aNewTile.classList.add('defaultTileStyle');
+        //                 aNewSvg.appendChild(aNewTile);
+        //                 aNewRow.appendChild(aNewSvg);
+        //             }
+        //
+        //             aNewDiv.appendChild(aNewRow);
+        //         }
+        //
+        //
+        //         document.getElementById('mapContainer').appendChild(aNewDiv);
+        //     }
+        // }
+
+        //using divs .. kinda slow .. but not too bad
+        function genMap() {
+
+            for (let quadNumber = 1 ; quadNumber<=QUADS ; quadNumber++){
+                let aNewDiv = document.createElement('div');
+                aNewDiv.setAttribute('id', quadNumber.toString());
+                aNewDiv.classList.add('quadStyle');
+
+                for (let rowNumber = 1; rowNumber <= ROW; rowNumber++) {
+                    let aNewRow = document.createElement('div');
+                    aNewRow.setAttribute('id', rowNumber.toString());
+                    aNewRow.classList.add('rowStyle');
+
+                    for (let tileNumber = 1; tileNumber <= TILE_PRE_ROW; tileNumber++) {
+                        let aNewTile = document.createElement('div');
+                        aNewTile.setAttribute('id', quadNumber.toString()+'-'+rowNumber.toString()+'-'+tileNumber.toString());
+                        aNewTile.classList.add('defaultTileStyle');
+
+
+                        // let aNewTile = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                        //
+                        // aNewTile.classList.add('defaultTileStyle');
+                        //
+                        // aNewSvg.appendChild(aNewTile);
+
+                        aNewRow.appendChild(aNewTile);
+                    }
+
+                    aNewDiv.appendChild(aNewRow);
+                }
+
+
+                document.getElementById('mapContainer').appendChild(aNewDiv);
+            }
+        }
+        genMap();
+
+
+
+    </script>
+    </body>
+</html>

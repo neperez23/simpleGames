@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Sandbox Play</title>
+        <style>
+            body{
+                margin: 0;
+            }
+            #box{
+                width: 500px;
+                height: 500px;
+                background-color: rgba(112, 201, 7, 0.47);
+            }
+
+            .recStyle{
+                fill: #409300;
+            }
+            .recStyle:hover{
+                fill: #50c700;
+            }
+        </style>
+    </head>
+    <body>
+        <svg id="box">
+
+        </svg>
+
+
+        <script>
+
+            let box = document.getElementById('box');
+
+            function getRandomIntInclusive(numRange){
+                return Number(Math.floor(Math.random() * numRange)+1);
+            }
+
+            function makePoint(aMap, range) {
+
+                let newKey = getRandomIntInclusive(range)+','+ getRandomIntInclusive(range);
+
+
+                if(aMap.size === 0){
+                    return newKey;
+                }
+                if(aMap.has(newKey)){
+                    makePoint(aMap);
+                }else{
+                    return newKey;
+                }
+            }
+
+            //using an array .. causes overlap .. fix with map
+            function makeCluster(aMap, range, tileSize) {
+                // top 1, right 2, bottom 3, left 4
+                let direction = getRandomIntInclusive(4);
+
+                console.log('direction: '+direction);
+
+                if(aMap.length === 0){
+                    return '250,250';
+                }else{
+                    let lastTile = aMap[aMap.length -1];
+
+                    console.log('last tile variable: ' + lastTile);
+
+                    if(direction === 1){
+                        return lastTile.split(',')[0] + ',' + (parseInt(lastTile.split(',')[1])- tileSize);
+                    }
+                    if(direction === 2){
+                        return (parseInt(lastTile.split(',')[0])+tileSize) + ',' + lastTile.split(',')[1];
+                    }
+                    if(direction === 3){
+                        return lastTile.split(',')[0] + ',' + (parseInt(lastTile.split(',')[1])+ tileSize);
+                    }
+                    if(direction === 4){
+                        return (parseInt(lastTile.split(',')[0])-tileSize) + ',' + lastTile.split(',')[1];
+                    }
+                }
+
+            }
+
+            //
+            // function makeCluster(aMap, range, tileSize) {
+            //     // top 1, right 2, bottom 3, left 4
+            //     let direction = getRandomIntInclusive(4);
+            //
+            //     console.log('direction: '+direction);
+            //
+            //     if(aMap.size === 0){
+            //         return '250,250';
+            //     }else{
+            //         let lastTile = aMap[aMap.length -1];
+            //
+            //         console.log('last tile variable: ' + lastTile);
+            //
+            //         if(direction === 1){
+            //             return lastTile.split(',')[0] + ',' + (parseInt(lastTile.split(',')[1])- tileSize);
+            //         }
+            //         if(direction === 2){
+            //             return (parseInt(lastTile.split(',')[0])+tileSize) + ',' + lastTile.split(',')[1];
+            //         }
+            //         if(direction === 3){
+            //             return lastTile.split(',')[0] + ',' + (parseInt(lastTile.split(',')[1])+ tileSize);
+            //         }
+            //         if(direction === 4){
+            //             return (parseInt(lastTile.split(',')[0])-tileSize) + ',' + lastTile.split(',')[1];
+            //         }
+            //     }
+            //
+            // }
+
+            function createForest(tileCount) {
+                let aMap = [];
+
+                for (let i = 0; i < tileCount; i++) {
+                    aMap[i] = (makeCluster(aMap, 10, 21));
+                    console.log(aMap);
+                }
+
+                plotTiles(aMap);
+
+                //console.log(aMap);
+            }
+
+            // function createForest(tileCount) {
+            //     let aMap = new Map();
+            //
+            //     for (let i = 0; i < tileCount; i++) {
+            //         aMap.set(makePoint(aMap, 50), i);
+            //     }
+            //
+            //     plotTiles(aMap);
+            //
+            //     //console.log(aMap);
+            // }
+
+            function plotTiles(tileArr){
+                for (let cords of tileArr) {
+
+                    console.log(cords);
+
+                    let x = parseInt(cords.split(',')[0]);
+                    let y = parseInt(cords.split(',')[1]);
+
+                    let rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+
+                    rect.setAttribute('x', (x).toString());
+                    rect.setAttribute('y', (y).toString());
+                    rect.setAttribute('width', '20px');
+                    rect.setAttribute('height', '20px');
+
+                    rect.classList.add('recStyle');
+
+                    box.appendChild(rect);
+                }
+            }
+
+            // function plotTiles(tileMap){
+            //     for (let key of tileMap.keys()) {
+            //
+            //         console.log(key);
+            //
+            //         let x = parseInt(key.split(',')[0]);
+            //         let y = parseInt(key.split(',')[1]);
+            //
+            //         let rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            //
+            //         rect.setAttribute('x', (x*10).toString());
+            //         rect.setAttribute('y', (y*10).toString());
+            //         rect.setAttribute('width', '20px');
+            //         rect.setAttribute('height', '20px');
+            //
+            //         rect.classList.add('recStyle');
+            //
+            //         box.appendChild(rect);
+            //     }
+            // }
+
+            createForest(100);
+
+
+
+
+        </script>
+    </body>
+</html>
